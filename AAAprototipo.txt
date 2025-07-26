@@ -1,0 +1,124 @@
+menu
+    registrar un pedido
+        en sito?
+            nombre:
+            telefono:
+            crearpizza()
+            agregarAlaCola()
+
+        domicilio?
+            datoscliente()
+            crearpizza()
+            agregarAlaCola():
+            
+    
+    estado del inventario
+            listar:
+                listartIngredientes()
+            agreagar:
+                agregarIngredientes()
+            eliminar:
+                eliminarIngretiene()
+            actualizar:
+                actualizarCantidad()
+
+    pizzas
+        listar todas las pizzas en cola:
+            listarPizzas();
+        cambiar estado de pizza:
+            en sitio:
+                lista/en preparacion
+
+            domicilio
+                lista/en preparacion
+                asignarRepartidorAuto()
+        
+
+    repartidores:
+        listarRepartidores():
+
+        repartidores disponibles:
+            listarRepartidoresDisponibles()
+        repartidor en runta:
+            listarRepartidoresEnRuta()
+
+
+    datos de ventas y tendencias:
+        //desarrollo a futuro
+
+
+datoscliente()
+    nombre:(input)
+    telefono:(input)
+    departamento (input)
+    ciudad (input)
+    barrio (input)
+    direccion (tipo de via/ numero / guion  ) (input)
+     ejemplo: (carrera   1      # 1  - 1)
+    tipo de inmueble
+       apartamento
+       casa
+       hotel
+       edificio
+       oficina
+    instrucciones para el repartidor (input)
+
+crearpizza():
+    
+    tamaño y masa:
+        1) 28, 36, 41 (cm)
+
+    tipo de masa:      
+        2) masa original (Nuestra original masa hecha a mano)
+           pan pizza (Masa horneada en sartén, esponjosa, sin borde, con un toque de mantequilla)
+           Borde de Queso (Masa original con un delicioso borde relleno de queso y finas hierbas)
+    
+    Ingredientes:
+        3) queso 
+           salsa 
+           Cerdo
+           Jamón
+           Chorizo
+           Pepperoni
+           Tocineta
+           Pollo
+           Tomate
+           Pimentón
+           Maíz Tierno
+           Escoge Otros Ingredientes
+           Jalapeño
+           Champiñón
+           Piña
+           Cebolla
+           Orégano
+           BBQ Salsa
+           Salsa Queso Cheddar
+           Salsa Teriyaki
+
+        4) agreagar otra pizza 
+            si
+              
+            no (guardado en el carrito,total a pagar es:)
+            
+
+asignarRepartidorAuto()
+    //buscar repartidor con estado disponible        
+    //si esta disponible asignar
+    //sino dejar en cola hasta librar un repartidor
+
+agregarAlaCola():
+    //insertOne en la colleccion
+    pushea en la collecion la pizza creada
+
+
+esquemas de objetos (colleciones y tablas)
+
+    collecion pedidos
+
+
+
+
+//notas:
+//  mostrar solo la lista de ingredientes que esten disponibles en el momento
+
+
