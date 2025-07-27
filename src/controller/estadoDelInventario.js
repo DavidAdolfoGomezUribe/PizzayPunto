@@ -36,7 +36,142 @@ export default async function estadoDelInventario() {
             table(find)
             break;
     
-        default:
+        case "agreagar":
+            await agregar();
             break;
-    }
+    
+        case "eliminar":
+            await eliminar();
+            break;
+    
+    
+    
+        }
 }
+
+async function agregar (){ 
+    log("por favor ingrese los siguientes datos para insertar un nuevo ingrediente ")
+    
+    const respuestas = await inquirer.prompt([
+        {
+            type:"input",
+            name:"nombre",
+            message:"Ingrese el nombre del ingrediente",
+        },{
+            type:"input",
+            name:"cantidad",
+            message:"Ingrese la cantidad del ingrediente",
+        },{
+            type:"input",
+            name:"precio",
+            message:"Ingrese el precio ingrediente",
+        }
+    ])
+
+    const session =  client.startSession();    
+    
+    try {
+        await session.withTransaction(async ()=>{
+            const inventario =  db.collection("inventario");
+            
+                const response = await inventario.insertOne(
+                    {nombre: respuestas.nombre,
+                    cantidad: parseInt(respuestas.cantidad),
+                    precio: parseInt(respuestas.precio)},
+                    {session}
+                )
+                const generateID = response.insertedId
+                log(`Producto registrado con exito con el id: ${generateID}`)
+                table(respuestas)
+        })
+        
+     } catch (error) {
+        
+     }finally{
+         await session.endSession();
+     }
+
+}
+
+
+async function eliminar(){
+    const inventario = db.collection("inventario")
+    const findOne = await inventario.find({}).toArray();
+    const nombres = findOne.map((ingrediente)=>{return ingrediente.nombre})
+
+    const respuestas = await inquirer.prompt([{
+        type:"list",
+        name:"nombre",
+        message:"Inventario",
+        choices: nombres
+    }])
+
+    const session =  client.startSession();    
+    
+    try {
+        await session.withTransaction(async ()=>{
+            const inventario =  db.collection("inventario");
+                const response = await inventario.deleteOne(
+                    {nombre: respuestas.nombre},                    
+                    {session}
+                )
+                
+                log(`Producto eliminado: ${respuestas.nombre}`)
+                table(response)
+        })
+        
+    } catch (error) {
+    
+    }finally{
+        await session.endSession();
+    }
+
+}
+
+
+async function  editar() {
+    const inventario = db.collection("inventario")
+
+    const findOne = await inventario.find({}).toArray();
+
+    const nombres = findOne.map((ingrediente)=>{return ingrediente.nombre})
+     
+
+    const respuestas = await inquirer.prompt([{
+        type:"list",
+        name:"registrar",
+        message:"Inventario",
+        choices: nombres
+    }])
+
+    
+
+
+    // const session =  client.startSession();
+    
+    // try {
+        
+    //     await session.withTransaction(async ()=>{
+    //         const inventario =  db.collection("inventario");
+    //         // san buclecito for
+    //         for (let i = 0; i < ingredientes.length; i++) {
+                
+    //             await inventario.updateOne({
+    //                 nombre:ingredientes[i]},
+    //                 {$inc:{cantidad:-1}},
+    //                 {session}
+    //            )
+                
+    //         }
+
+    //     })
+        
+    // } catch (error) {
+        
+    // }finally{
+    //     await session.endSession();
+    // }
+
+    
+}
+

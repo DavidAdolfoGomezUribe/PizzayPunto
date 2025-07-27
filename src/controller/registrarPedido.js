@@ -59,7 +59,7 @@ export default async function registrarPedido() {
             table(pedidoDomi.toObject());
             log("*******");
             
-            log("********");
+            
             break;
 
         
