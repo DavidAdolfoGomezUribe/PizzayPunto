@@ -1,10 +1,11 @@
+import dotenv from "dotenv";
 dotenv.config();
 
-import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import { log, table } from "console";
 import inquirer from "inquirer";
 
+import Pedido from "../abstrac/Pedidos.js";
 
 //conexion a la base de datps
 const url = process.env.MONGO_URI;
@@ -36,16 +37,29 @@ export default async function registrarPedido() {
             
             log("********")
             const datosCliente = await enSitio();//esto retorna un objeto { nombre: 'asf', cedula: '123' }
-            const laPizza = await pizza(); // esto retorna { nombre: 'asd', telefono: 'asd' } {'tamaño': '28', tipodemasa: 'masa original',
-            await transaccionActualizarListado(laPizza.ingredientes)// pa actualizar el listado en la base de datos
-            const total = await precioTotal(laPizza.tamaño,laPizza.tipodemasa,laPizza.ingredientes);
+            const laPizza = await pizza(); // esto retorna  {'tamaño': '28', tipodemasa: 'masa original', y ub array de ingredientes
+            await transaccionActualizarListado(laPizza.ingredientes);// pa actualizar el listado en la base de datos
+            const total = await precioTotal(laPizza.tamaño,laPizza.tipodemasa,laPizza.ingredientes);//retorna el valor de la pizza
 
-            log(datosCliente,laPizza,total)
+            const pedido = new Pedido(datosCliente,laPizza,total); //crea un objeto tipo pedido
+            await db.collection("pedidos").insertOne({...pedido}); //inserta el pedido a la base de datos
+            log("Pizza registrada con exito")
+            table(pedido.toObject());
+            log("*******");
             break;
         
         case "A domicilio":
-            log("a domicilio")
-            log("********")
+            const datosClienteDomi = await aDomicilio();
+            const laPizzaDomi = await pizza();
+            await transaccionActualizarListado(laPizzaDomi.ingredientes);
+            const totalDomi = await precioTotal(laPizzaDomi.tamaño,laPizzaDomi.tipodemasa,laPizzaDomi.ingredientes);
+            const pedidoDomi = new Pedido(datosClienteDomi,laPizzaDomi,totalDomi);
+            await db.collection("pedidos").insertOne({...pedidoDomi});
+            log("Pizza registrada con exito")
+            table(pedidoDomi.toObject());
+            log("*******");
+            
+            log("********");
             break;
 
         
@@ -154,7 +168,7 @@ async function  transaccionActualizarListado(ingredientes) {
     }
 }
 
-
+//listado de precios
 async function precioTotal(tamaño,tipodemasa,ingredientes){
     let array = []
     //precio tamaños pizza
@@ -175,7 +189,7 @@ async function precioTotal(tamaño,tipodemasa,ingredientes){
         array.push(3000)
     }
 
-
+    //precios de los ingredientes
     const inventario = db.collection("inventario")
 
     for (let i = 0; i < ingredientes.length; i++) {
@@ -186,4 +200,63 @@ async function precioTotal(tamaño,tipodemasa,ingredientes){
     const total = array.reduce((a, b) => a + b, 0);
     
     return total
+}
+
+async function aDomicilio() {
+
+    //datos del cliente
+    const respuestas = await inquirer.prompt([
+        {
+            type: "input",
+            name: "nombre",
+            message: "Inserte su nombre"
+        },
+        {
+            type: "input",
+            name: "telefono",
+            message: "Inserte su número de teléfono"
+        },
+        {
+            type: "input",
+            name: "departamento",
+            message: "Inserte su departamento"
+        },
+        {
+            type: "input",
+            name: "ciudad",
+            message: "Inserte su ciudad"
+        },
+        {
+            type: "input",
+            name: "barrio",
+            message: "Inserte su barrio"
+        },
+        {
+            type: "input",
+            name: "direccion",
+            message: "Inserte su dirección (tipo de vía / número / guion). Ejemplo: carrera 1 # 1 - 1"
+        },
+        {
+            type: "list",
+            name: "tipoInmueble",
+            message: "Seleccione el tipo de inmueble",
+            choices: [
+                "Apartamento",
+                "Casa",
+                "Hotel",
+                "Edificio",
+                "Oficina"
+            ]
+        },
+        {
+            type: "input",
+            name: "instrucciones",
+            message: "¿Alguna instrucción para el repartidor?"
+        }
+    ]);
+
+    //log(respuestas.nombre , respuestas.telefono);
+    return respuestas
+
+
 }
