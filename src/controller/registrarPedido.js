@@ -36,8 +36,8 @@ export default async function registrarPedido() {
             
             log("********")
             const datosCliente = await enSitio();//esto retorna un objeto { nombre: 'asf', cedula: '123' }
-            const laPizza = await pizza();
-            await transaccionActualizarListado(laPizza.ingredientes)
+            const laPizza = await pizza(); // esto retorna { nombre: 'asd', telefono: 'asd' } {'tamaño': '28', tipodemasa: 'masa original',
+            await transaccionActualizarListado(laPizza.ingredientes)// pa actualizar el listado en la base de datos
             
 
             log(datosCliente,laPizza)
@@ -82,6 +82,15 @@ async function pizza() {
 
     const findOne = await inventario.find({}).toArray();
     
+    //filtrado por ingredientes cuya cantidad es mayor a 0
+    const ingredientesDisponibles = findOne.map( (ingrediente) =>{
+                if (ingrediente.cantidad > 0) {
+                    return  ingrediente.nombre
+                } else {
+                    return null
+                }
+            } ).filter(Boolean);
+    
     
     //debe consular la base de datos para los ingredientes
     const respuestas = await inquirer.prompt([
@@ -104,7 +113,10 @@ Borde de Queso: (Masa original con un delicioso borde relleno de queso y finas h
             type:"checkbox",
             name:"ingredientes",
             message: "Seleccione los ingredientes que desea agregar a su pizza",
-            choices: findOne.map(ingrediente => ingrediente.nombre)
+            choices: ingredientesDisponibles
+            
+                
+            
         }
 
     ])
@@ -113,7 +125,7 @@ Borde de Queso: (Masa original con un delicioso borde relleno de queso y finas h
     return respuestas
 
 }
-
+//funcion para actualizar las cantidades de los ngredientes
 async function  transaccionActualizarListado(ingredientes) {
     ingredientes
 
@@ -123,12 +135,17 @@ async function  transaccionActualizarListado(ingredientes) {
         
         await session.withTransaction(async ()=>{
             const inventario =  db.collection("inventario");
+            // san buclecito for
+            for (let i = 0; i < ingredientes.length; i++) {
+                
+                await inventario.updateOne({
+                    nombre:ingredientes[i]},
+                    {$inc:{cantidad:-1}},
+                    {session}
+               )
+                
+            }
 
-            await inventario.updateOne({
-                nombre:ingredientes[0]},
-                {$inc:{cantidad:-1}},
-                {session}
-           )
         })
         
     } catch (error) {
@@ -137,8 +154,4 @@ async function  transaccionActualizarListado(ingredientes) {
         await session.endSession();
 
     }
-
-
-
-
 }

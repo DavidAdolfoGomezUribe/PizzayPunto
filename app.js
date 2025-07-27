@@ -5,6 +5,7 @@ import { MongoClient } from "mongodb";
 import { log, table, error } from "node:console";
 import inquirer from "inquirer";
 import registrarPedido from "./src/controller/registrarPedido.js";
+import estadoDelInventario from "./src/controller/estadoDelInventario.js"
 
 //conexion a la base de datps
 const url = process.env.MONGO_URI;
@@ -37,8 +38,8 @@ async function menu() {
                 break;
             
             case "Estado del inventario:":
-                log("opcion seleccionada",respuestas.registrar)
-                menu();
+                await estadoDelInventario();
+                await menu();
                 break;
             
             case "Pizzas:":
