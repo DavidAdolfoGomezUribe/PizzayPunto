@@ -38,9 +38,9 @@ export default async function registrarPedido() {
             const datosCliente = await enSitio();//esto retorna un objeto { nombre: 'asf', cedula: '123' }
             const laPizza = await pizza(); // esto retorna { nombre: 'asd', telefono: 'asd' } {'tamaño': '28', tipodemasa: 'masa original',
             await transaccionActualizarListado(laPizza.ingredientes)// pa actualizar el listado en la base de datos
-            
+            const total = await precioTotal(laPizza.tamaño,laPizza.tipodemasa,laPizza.ingredientes);
 
-            log(datosCliente,laPizza)
+            log(datosCliente,laPizza,total)
             break;
         
         case "A domicilio":
@@ -127,8 +127,7 @@ Borde de Queso: (Masa original con un delicioso borde relleno de queso y finas h
 }
 //funcion para actualizar las cantidades de los ngredientes
 async function  transaccionActualizarListado(ingredientes) {
-    ingredientes
-
+    
     const session =  client.startSession();
     
     try {
@@ -152,6 +151,39 @@ async function  transaccionActualizarListado(ingredientes) {
         
     }finally{
         await session.endSession();
-
     }
+}
+
+
+async function precioTotal(tamaño,tipodemasa,ingredientes){
+    let array = []
+    //precio tamaños pizza
+    if (tamaño == "28") {
+        array.push(5000)
+    }else if(tamaño == "36"){
+        array.push(7000)
+    }else if (tamaño == "41"){
+        array.push(10000)
+    }
+
+    //precio tipo de masa
+    if(tipodemasa == "masa original"){
+        array.push(1000)
+    }else if(tipodemasa == "pan pizza"){
+        array.push(2000)
+    }else if(tipodemasa == "borde de queso"){
+        array.push(3000)
+    }
+
+
+    const inventario = db.collection("inventario")
+
+    for (let i = 0; i < ingredientes.length; i++) {
+        
+        const precio = await inventario.findOne({nombre:ingredientes[i]}            )
+        array.push(precio.precio)
+    }
+    const total = array.reduce((a, b) => a + b, 0);
+    
+    return total
 }
