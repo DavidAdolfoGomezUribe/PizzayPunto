@@ -1,7 +1,10 @@
-require('dotenv').config();
-const { MongoClient } = require('mongodb');
-const { log,table,error } = require('node:console');
-const inquirer = require('inquirer');
+dotenv.config();
+
+import dotenv from "dotenv";
+import { MongoClient } from "mongodb";
+import { log, table, error } from "node:console";
+import inquirer from "inquirer";
+import registrarPedido from "./src/controller/registrarPedido.js";
 
 //conexion a la base de datps
 const url = process.env.MONGO_URI;
@@ -11,7 +14,55 @@ const client = new MongoClient(url);
 const dbName = "pizzeria"
 
 
+async function menu() {
+    const respuestas = await inquirer.prompt([
+        {
+            type: "list", //tipo list input confirm 
+            name:"registrar",
+            message:"Menu",
+            choices:[
+                "Registrar un pedido:",
+                "Estado del inventario:",
+                "Pizzas:",
+                "Repartidores:",
+                "Datos de ventas y tendencias:",
+                "salir"
+            ]
+        }]); 
+        
+        switch (respuestas.registrar) {
+            case "Registrar un pedido:":
+                await registrarPedido();
+                await menu();
+                break;
+            
+            case "Estado del inventario:":
+                log("opcion seleccionada",respuestas.registrar)
+                menu();
+                break;
+            
+            case "Pizzas:":
+                log("opcion seleccionada",respuestas.registrar)
+                menu();
+                break;
+            case "Repartidores:":
+                log("opcion seleccionada",respuestas.registrar)
+                menu();
+                break;
+            case "Datos de ventas y tendencias:":
+                log("opcion seleccionada",respuestas.registrar)
+                menu();
+                break;                                
+            case "salir":
+                process.exit(0);
+                
+        }
+        
+        
+    }//fin del menu
 
+
+menu();
 
 
 
