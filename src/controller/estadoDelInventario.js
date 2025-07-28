@@ -18,7 +18,6 @@ await client.connect();
 const db=client.db(dbName)
 
 
-
 export default async function estadoDelInventario() {
     const respuestas = await inquirer.prompt([{
         type:"list",
@@ -43,8 +42,10 @@ export default async function estadoDelInventario() {
         case "eliminar":
             await eliminar();
             break;
-    
-    
+
+        case "actualizar":
+            await editar();
+            break;
     
         }
 }
@@ -130,47 +131,52 @@ async function eliminar(){
 
 
 async function  editar() {
-    const inventario = db.collection("inventario")
 
+    const inventario = db.collection("inventario")
     const findOne = await inventario.find({}).toArray();
 
     const nombres = findOne.map((ingrediente)=>{return ingrediente.nombre})
      
 
     const respuestas = await inquirer.prompt([{
-        type:"list",
-        name:"registrar",
-        message:"Inventario",
-        choices: nombres
-    }])
+            type:"list",
+            name:"nombre",
+            message:"Seleccione un producto para editar",
+            choices: nombres
+        },{
+            type:"input",
+            name:"cantidad",
+            message:"cantidad"
+        },{
+            type:"input",
+            name:"precio",
+            message:"precio"
+        }
+    ])
 
-    
+    const session =  client.startSession();    
 
-
-    // const session =  client.startSession();
-    
-    // try {
-        
-    //     await session.withTransaction(async ()=>{
-    //         const inventario =  db.collection("inventario");
-    //         // san buclecito for
-    //         for (let i = 0; i < ingredientes.length; i++) {
+    try {
+        await session.withTransaction(async ()=>{
+            const inventario =  db.collection("inventario");
+                const response = await inventario.updateOne(
+                    {nombre: respuestas.nombre},
+                    {$set:{
+                        cantidad:parseInt(respuestas.cantidad),
+                        precio:parseInt(respuestas.precio)
+                    }},                    
+                    {session}
+                )
                 
-    //             await inventario.updateOne({
-    //                 nombre:ingredientes[i]},
-    //                 {$inc:{cantidad:-1}},
-    //                 {session}
-    //            )
-                
-    //         }
-
-    //     })
+                log(`Producto actualizado con exito: `)
+                table(response)
+        })
         
-    // } catch (error) {
-        
-    // }finally{
-    //     await session.endSession();
-    // }
+    } catch (error) {
+    
+    }finally{
+        await session.endSession();
+    }
 
     
 }

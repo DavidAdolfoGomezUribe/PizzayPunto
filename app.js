@@ -6,6 +6,7 @@ import { log, table, error } from "node:console";
 import inquirer from "inquirer";
 import registrarPedido from "./src/controller/registrarPedido.js";
 import estadoDelInventario from "./src/controller/estadoDelInventario.js"
+import pizzas from "./src/controller/Pizzas.js";
 
 //conexion a la base de datps
 const url = process.env.MONGO_URI;
@@ -43,8 +44,8 @@ async function menu() {
                 break;
             
             case "Pizzas:":
-                log("opcion seleccionada",respuestas.registrar)
-                menu();
+                await pizzas();
+                await menu();
                 break;
             case "Repartidores:":
                 log("opcion seleccionada",respuestas.registrar)

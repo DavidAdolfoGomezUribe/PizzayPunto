@@ -53,13 +53,11 @@ export default async function registrarPedido() {
             const laPizzaDomi = await pizza();
             await transaccionActualizarListado(laPizzaDomi.ingredientes);
             const totalDomi = await precioTotal(laPizzaDomi.tamaño,laPizzaDomi.tipodemasa,laPizzaDomi.ingredientes);
-            const pedidoDomi = new Pedido(datosClienteDomi,laPizzaDomi,totalDomi);
+            const pedidoDomi = new Pedido(datosClienteDomi,laPizzaDomi,totalDomi,"En proceso",new Date(),true);
             await db.collection("pedidos").insertOne({...pedidoDomi});
             log("Pizza registrada con exito")
             table(pedidoDomi.toObject());
             log("*******");
-            
-            
             break;
 
         
