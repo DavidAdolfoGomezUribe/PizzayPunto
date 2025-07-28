@@ -38,9 +38,12 @@ menu
         listarRepartidores():
 
         repartidores disponibles:
-            listarRepartidoresDisponibles()
-        repartidor en runta:
-            listarRepartidoresEnRuta()
+            listarRepartidoresDisponibles();
+        repartidor en ruta:
+            listarRepartidoresEnRuta();
+        finalizar domicilio:
+            finalizarDomi();
+
 
 
     datos de ventas y tendencias:

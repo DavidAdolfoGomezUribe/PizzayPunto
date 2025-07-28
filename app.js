@@ -1,12 +1,14 @@
+import dotenv from "dotenv";
+
 dotenv.config();
 
-import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import { log, table, error } from "node:console";
 import inquirer from "inquirer";
 import registrarPedido from "./src/controller/registrarPedido.js";
 import estadoDelInventario from "./src/controller/estadoDelInventario.js"
 import pizzas from "./src/controller/Pizzas.js";
+import repartidores from "./src/controller/repartidores.js";
 
 //conexion a la base de datps
 const url = process.env.MONGO_URI;
@@ -48,8 +50,9 @@ async function menu() {
                 await menu();
                 break;
             case "Repartidores:":
-                log("opcion seleccionada",respuestas.registrar)
-                menu();
+                await repartidores();
+                await menu();
+                
                 break;
             case "Datos de ventas y tendencias:":
                 log("opcion seleccionada",respuestas.registrar)
